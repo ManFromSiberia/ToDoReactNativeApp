@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Text,
   StatusBar,
-  View, DrawerLayoutAndroid, ScrollView
+  View, DrawerLayoutAndroid, ScrollView, AsyncStorage, TouchableHighlight
 } from 'react-native';
 
 import Toolbar from './components/Toolbar'
@@ -13,36 +13,47 @@ import ToDoItem from "./components/ToDoItem";
 type Props = {};
 export default class App extends Component<Props> {
   state = {
-    todos: [
-      {
-        title: "Hello"
-      }, {
-        title: "World"
-      }
-    ]
+    todos: []
   };
+
   constructor (){
     super();
-    this.openDrawer = this.openDrawer.bind(this)
-    this.addNewPoint = this.addNewPoint.bind(this)
+    this.openDrawer = this.openDrawer.bind(this);
+    this.addNewPoint = this.addNewPoint.bind(this);
   }
+  //clear = AsyncStorage.clear();
+  componentDidMount = async () => await AsyncStorage.getItem('todos').then((value)=>{
+    this.setState({ todos: JSON.parse([value]) })
+  });
 
-  addNewPoint (){
-    let title = "FBL>KSWHGJ";
+
+  setName = async (title) => {
+    try {
+      await AsyncStorage.setItem('todos', JSON.stringify([title, ...this.state.todos]));
+    } catch (err) {
+      console.log("Не записалось");
+    }
+  };
+
+  addNewPoint () {
+    let title = "title";
     const newPoint = {title};
-    this.setState({todos: [newPoint, ...this.state.todos]})
+    this.setName(newPoint).then(()=>{
+      this.setState({todos: [newPoint, ...this.state.todos]});
+    });
   }
 
   openDrawer (){
-    this.refs.huinya.openDrawer();
+    this.refs.leftMenu.openDrawer();
   }
 
   render() {
     return (
-        <DrawerLayoutAndroid ref={'huinya'}
+        <DrawerLayoutAndroid ref={'leftMenu'}
                              renderNavigationView={() => (<View></View>)}
                              drawerPosition={DrawerLayoutAndroid.positions.Left}>
           <StatusBar translucent backgroundColor={"rgba(13,167,204, 0.5)"}/>
+
         <View style={styles.container}>
           <Toolbar shadow
                    rightOptions={[{icon: 'add', handler: this.addNewPoint}]}
@@ -65,6 +76,15 @@ export default class App extends Component<Props> {
         </DrawerLayoutAndroid>
     );
   }
+}
+
+let token = '';
+const possible = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789';
+const count = possible.length - 1;
+let position;
+for( let i = 0; i < 30; i++ ) {
+  position = Math.round(Math.random() * count);
+  token += possible.charAt(position);
 }
 
 const styles = StyleSheet.create({
