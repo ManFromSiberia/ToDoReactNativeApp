@@ -4,11 +4,12 @@ import {
   StyleSheet,
   Text,
   StatusBar,
-  View, DrawerLayoutAndroid, ScrollView, AsyncStorage, TouchableHighlight
+  View, DrawerLayoutAndroid, ScrollView, AsyncStorage, TouchableHighlight, Animated
 } from 'react-native';
 
 import Toolbar from './components/Toolbar'
 import ToDoItem from "./components/ToDoItem";
+import ModalForm from './components/InputFormModal'
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -40,6 +41,8 @@ export default class App extends Component<Props> {
     const newPoint = {title};
     this.setName(newPoint).then(()=>{
       this.setState({todos: [newPoint, ...this.state.todos]});
+    }).catch(err => {
+      alert(err)
     });
   }
 
@@ -50,10 +53,11 @@ export default class App extends Component<Props> {
   render() {
     return (
         <DrawerLayoutAndroid ref={'leftMenu'}
-                             renderNavigationView={() => (<View></View>)}
-                             drawerPosition={DrawerLayoutAndroid.positions.Left}>
-          <StatusBar translucent backgroundColor={"rgba(13,167,204, 0.5)"}/>
+                             renderNavigationView={() => (<View>
 
+                             </View>)}
+                             drawerPosition={DrawerLayoutAndroid.positions.Left}>
+          <StatusBar translucent backgroundColor={"#0d7b9c"}/>
         <View style={styles.container}>
           <Toolbar shadow
                    rightOptions={[{icon: 'add', handler: this.addNewPoint}]}

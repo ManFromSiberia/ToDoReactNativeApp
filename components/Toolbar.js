@@ -1,14 +1,35 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 const {height, width} = Dimensions.get('window');
 
 export default class Toolbar extends React.Component {
+  componentWillMount(){
+    this.animatedValueRightElement = new Animated.Value(0);
+  }
+
+  onPressRightElement(handler) {
+    //alert(this.animatedValueRightElement._value);
+    this.animatedValueRightElement._value = 0;
+    let curSpin = 1;
+    Animated.timing(this.animatedValueRightElement, {
+      toValue: curSpin,
+      duration: 250
+    }).start();
+    handler ()
+  }
+
+
+
 
   render() {
     const { title, leftOption, rightOptions, titleColor, optionColor, shadow, longName } = this.props;
 
+    const spin = this.animatedValueRightElement.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '180deg'],
+    });
     return (
         <View style={[styles.container, {elevation: shadow ? 15 : 0}]}>
           <View style={styles.block}>
@@ -33,8 +54,8 @@ export default class Toolbar extends React.Component {
                 <View><Text>erhgmrh</Text></View>
                 :
                 (
-                  <TouchableOpacity key={option.title || option.icon} style={styles.option} onPress={option.handler}>
-                    <View style={{flex: 1, justifyContent: 'center'}}>
+                  <TouchableOpacity key={option.title || option.icon} style={styles.option} onPress={() => this.onPressRightElement(option.handler)}>
+                    <Animated.View style={{flex: 1, justifyContent: 'center', transform: [{rotate: spin }]}}>
                       {option.icon
                         ?
                         <Icon name={option.icon} size={28} color="white"/>
@@ -44,7 +65,7 @@ export default class Toolbar extends React.Component {
                         </Text>
                       }
 
-                    </View>
+                    </Animated.View>
                   </TouchableOpacity>
                 )
             })}

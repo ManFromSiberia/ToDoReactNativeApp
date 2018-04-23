@@ -1,23 +1,55 @@
 import React from "react";
 import {
   View, Text, TouchableOpacity, StyleSheet, Dimensions, TouchableHighlight,
-  TouchableNativeFeedback
+  TouchableNativeFeedback, Animated, Easing
 } from 'react-native'
 import Swipeable from 'react-native-swipeable'
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const {height, width} = Dimensions.get('window');
-
+let showDescription = false;
 
 export default class ToDoItem extends React.PureComponent {
+  state = {
+    showDescription: false
+  };
+  componentWillMount(){
+    this.animatedValue = new Animated.Value(height*0.1);
+  }
+
+  heightAnimation(){
+    let curHeight;
+    //alert(this.animatedValue._value);
+    if (this.animatedValue._value === height*0.3){
+      curHeight = height*0.1;
+      this.setState({showDescription: false})
+    }else{
+      curHeight = height*0.3;
+      this.setState({showDescription: true})
+    }
+    Animated.timing(this.animatedValue, {
+      toValue: curHeight,
+      duration: 250,
+      easing: Easing.ease
+    }).start(()=> {
+      showDescription = this.animatedValue._value === height * 0.3;
+    })
+  }
+
+  _onPress(){
+    this.heightAnimation();
+  }
+
   render() {
+    const animatedStyle = { height: this.animatedValue };
     const { title } = this.props;
     return (
       <Swipeable rightButtons={rightButtons}>
-        <TouchableNativeFeedback>
-          <View style={styles.item}>
+        <TouchableNativeFeedback onPress={() => this._onPress()}>
+          <Animated.View style={[styles.item, animatedStyle]}>
             <Text>{title}</Text>
-          </View>
+            {this.state.showDescription && <Text>Hello its test description</Text>}
+          </Animated.View>
         </TouchableNativeFeedback>
       </Swipeable>
     )
