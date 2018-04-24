@@ -10,12 +10,11 @@ export default class Toolbar extends React.Component {
   }
 
   onPressRightElement(handler) {
-    //alert(this.animatedValueRightElement._value);
     this.animatedValueRightElement._value = 0;
     let curSpin = 1;
     Animated.timing(this.animatedValueRightElement, {
       toValue: curSpin,
-      duration: 250
+      duration: 400
     }).start();
     handler ()
   }
