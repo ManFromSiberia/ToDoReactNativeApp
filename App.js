@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import Toolbar from './components/Toolbar'
 import ToDoItem from "./components/ToDoItem";
-import ModalForm from './components/InputFormModal'
 import { setCustomText } from 'react-native-global-props';
 import { TextField } from 'react-native-material-textfield';
 
@@ -68,7 +67,8 @@ export default class App extends Component<Props> {
 
 
   render() {
-    let { phone } = this.state;
+    let { title } = this.state;
+    let { description } = this.state;
     return (
         <DrawerLayoutAndroid ref={'leftMenu'}
                              renderNavigationView={() => (<View>
@@ -76,37 +76,44 @@ export default class App extends Component<Props> {
                              drawerPosition={DrawerLayoutAndroid.positions.Left}>
           <StatusBar translucent backgroundColor={"#0d7b9c"}/>
         <View style={styles.container}>
+
           <Modal  transparent={true}
                   visible={this.state.modalVisible}
                   animationType={"fade"}
                   onRequestClose={()=>this.setState({modalVisible: false})}>
             <View style={styles.modalForm}>
+
               <View style={styles.form}>
-                <TextField
-                  label='Title'
-                  value={phone}
-                  onChangeText={ (phone) => this.setState({ phone }) }
-                  lineWidth={0.1}
-                />
+                  <View style={{width: width*0.6}}>
+                    <TextField
+                      label='Title'
+                      value={title}
+                      onChangeText={ (title) => this.setState({ title }) }
+                    />
+                    <TextField
+                      label='Description'
+                      value={description}
+                      multiline={true}
+                      onChangeText={ (description) => this.setState({ description }) }
+                    />
+                  </View>
+              </View>
+
+              <View>
                 <TouchableHighlight onPress={()=>{this.setState({modalVisible: false})}}>
                   <Text>Close this window</Text>
                 </TouchableHighlight>
               </View>
+
             </View>
           </Modal>
+
           <Toolbar shadow
                    rightOptions={[{icon: 'add', handler: this.addNewPoint}]}
                     leftOption={{icon: 'menu', handler: this.openDrawer}}/>
           <TouchableHighlight onPress={()=>{this.setState({modalVisible: true})}}>
             <Text>Open Modal Form</Text>
           </TouchableHighlight>
-          <TextField
-            label='Title'
-            value={phone}
-            onChangeText={ (phone) => this.setState({ phone }) }
-            lineWidth={0.1}
-            inputContainerPadding={20}
-          />
           <View style={styles.content}>
             {this.state.todos
               ?
@@ -149,14 +156,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
-    padding: 15,
+    alignContent: 'center',
+    padding: 10
   },
   form:{
     backgroundColor: '#ffffff',
     height: height*0.4,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     borderRadius: 10,
-    borderColor: '#ffffff'
+    borderColor: '#ffffff',
+    alignContent: 'center'
   }
+
+
 });
