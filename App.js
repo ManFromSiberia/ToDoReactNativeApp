@@ -11,6 +11,7 @@ import Toolbar from './components/Toolbar'
 import ToDoItem from "./components/ToDoItem";
 import { setCustomText } from 'react-native-global-props';
 import { TextField } from 'react-native-material-textfield';
+import { TextButton, RaisedTextButton } from 'react-native-material-buttons';
 
 const customTextProps = {
   style: {
@@ -48,8 +49,9 @@ export default class App extends Component<Props> {
 
   addNewPoint () {
     //this.onOpenModal();
-    let title = "title";
-    const newPoint = {title};
+    let title = "titletest";
+    let description = "descriptiontest";
+    const newPoint = {title, description};
     this.setName(newPoint).then(()=>{
       this.setState({todos: [newPoint, ...this.state.todos]});
     }).catch(err => {
@@ -97,19 +99,25 @@ export default class App extends Component<Props> {
                       onChangeText={ (description) => this.setState({ description }) }
                     />
                   </View>
+                <View style={styles.modalButtons}>
+                  <RaisedTextButton
+                    title='Cancel'
+                    color='#cd201f'
+                    titleColor='#ffffff'
+                    onPress={()=>{this.setState({modalVisible: false})}}/>
+                  <RaisedTextButton
+                    title='Create'
+                    titleColor='#ffffff'
+                    color='rgb(0, 145, 234)'/>
+                </View>
               </View>
 
-              <View>
-                <TouchableHighlight onPress={()=>{this.setState({modalVisible: false})}}>
-                  <Text>Close this window</Text>
-                </TouchableHighlight>
-              </View>
 
             </View>
           </Modal>
 
           <Toolbar shadow
-                   rightOptions={[{icon: 'add', handler: this.addNewPoint}]}
+                   rightOptions={[{icon: 'add', handler:()=> {this.setState({modalVisible: true})}}]}
                     leftOption={{icon: 'menu', handler: this.openDrawer}}/>
           <TouchableHighlight onPress={()=>{this.setState({modalVisible: true})}}>
             <Text>Open Modal Form</Text>
@@ -119,7 +127,7 @@ export default class App extends Component<Props> {
               ?
               <ScrollView>
                 {this.state.todos.map(element =>
-                  <ToDoItem key={element} title={element.title}/>)}
+                  <ToDoItem key={element} title={element.title} description={element.description}/>)}
               </ScrollView>
               :
               <View>
@@ -167,7 +175,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#ffffff',
     alignContent: 'center'
-  }
-
+  },
+  submitModalFormButton:{
+    backgroundColor: '#0077b5',
+    height: height*0.05,
+    width: width*0.2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButtons:{
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
 
 });

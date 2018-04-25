@@ -42,13 +42,13 @@ export default class ToDoItem extends React.PureComponent {
 
   render() {
     const animatedStyle = { height: this.animatedValue };
-    const { title } = this.props;
+    const { title, description } = this.props;
     return (
       <Swipeable rightButtons={rightButtons}>
         <TouchableNativeFeedback onPress={() => this._onPress()}>
           <Animated.View style={[styles.item, animatedStyle]}>
             <Text>{title}</Text>
-            {this.state.showDescription && <Text>Hello its test description</Text>}
+            {this.state.showDescription && <Text>{description}</Text>}
           </Animated.View>
         </TouchableNativeFeedback>
       </Swipeable>
