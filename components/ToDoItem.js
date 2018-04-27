@@ -12,9 +12,7 @@ const leftContent = <Text>Pull to activate</Text>;
 
 export default class ToDoItem extends React.PureComponent {
   state = {
-    showDescription: false,
-    leftActionActivated: false,
-    toggle: false
+    showDescription: false
   };
   componentWillMount(){
     this.animatedValue = new Animated.Value(height*0.1);
@@ -23,27 +21,26 @@ export default class ToDoItem extends React.PureComponent {
   heightAnimation(){
     let curHeight;
     //alert(this.animatedValue._value);
-    if (this.animatedValue._value === height*0.3){
+    if (this.animatedValue._value === height*0.15){
       curHeight = height*0.1;
       this.setState({showDescription: false})
     }else{
-      curHeight = height*0.3;
+      curHeight = height*0.15;
       this.setState({showDescription: true})
     }
     Animated.timing(this.animatedValue, {
       toValue: curHeight,
       duration: 250,
       easing: Easing.ease
-    }).start(()=> {
-      showDescription = this.animatedValue._value === height * 0.3;
-    })
+    }).start()
   }
   _onPress(){
     this.heightAnimation();
   }
+  swipeable = null;
 
-  leftSwipe(){
-    alert("lefttt")
+  resetToInitialView() {
+    this.swipeable.recenter();
   }
 
   render() {
@@ -51,7 +48,8 @@ export default class ToDoItem extends React.PureComponent {
     const { title, description, id, complete } = this.props;
 
     return (
-      <Swipeable leftActionActivationDistance={125}
+      <Swipeable onRef={ref => this.swipeable = ref}
+        leftActionActivationDistance={125}
                  leftContent={(
                    <View style={[styles.leftSwipeItem]}>
                      {complete ?
@@ -61,7 +59,7 @@ export default class ToDoItem extends React.PureComponent {
                                 )}
                  onLeftActionActivate={() => {this.props.updateItem(id, 'COMPLETE')}}
                  rightButtons={[
-          <TouchableOpacity style={styles.button} onPress={() => {this.props.updateItem(id, 'DELETE')}}><Icon name={'delete'} size={40} color="red"/></TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => {this.props.updateItem(id, 'DELETE'); this.resetToInitialView()}}><Icon name={'delete'} size={40} color="red"/></TouchableOpacity>
         ]}>
         <TouchableOpacity onPress={() => this._onPress()} activeOpacity={0.7}>
           <Animated.View style={[styles.item, animatedStyle]}>

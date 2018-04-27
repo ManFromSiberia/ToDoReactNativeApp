@@ -5,7 +5,7 @@ import {
   Text,
   StatusBar,
   View, DrawerLayoutAndroid, ScrollView, AsyncStorage, TouchableHighlight, Animated, Modal, Dimensions,
-  TouchableNativeFeedback, ToastAndroid, TouchableOpacity
+  TouchableNativeFeedback, ToastAndroid, TouchableOpacity, Picker, SectionList, Switch
 } from 'react-native';
 import Toolbar from './components/Toolbar'
 import ToDoItem from "./components/ToDoItem";
@@ -28,6 +28,8 @@ export default class App extends Component<Props> {
     todos: [],
     modalVisible: false,
     isDateTimePickerVisible: false,
+    sendNotification: false,
+    notificationDate: undefined
   };
 
   constructor (){
@@ -60,33 +62,51 @@ export default class App extends Component<Props> {
     return token;
   }
 
+  clearAllState = () => {
+    this.setState({title:'', description: '', sendNotification: false, notificationDate: undefined});
+  };
+
   addNewPoint (inputTitle, inputDescription) {
-    //this.onOpenModal();
     let title = inputTitle;
     let description = inputDescription;
     let id = App.generateId();
     let complete = false;
+    let dateNotification = this.state.notificationDate;
 
-    const newPoint = {title, description, id, complete};
+    const newPoint = {title, description, id, complete, dateNotification};
     this.setName(newPoint).then(()=>{
       this.setState({todos: [newPoint, ...this.state.todos]});
       this.setState({modalVisible: false});
-      this.setState({title:''});
-      this.setState({description:''});
       ToastAndroid.show('Successful created new task!', ToastAndroid.SHORT);
+      this.clearAllState();
+      App.createNotificationSchedule(title, dateNotification)
     }).catch(err => {
       alert(err)
     });
   }
 
+  static createNotificationSchedule(title, date){
+    PushNotification.localNotificationSchedule({
+      //id: 1,
+      title: "You complete this task?",
+      message: title,
+      date: new Date(date)
+    });
+  }
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
 
-  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+  _hideDateTimePicker = () => {
+    if (this.state.notificationDate === undefined){
+      this.setState({sendNotification: false})
+    }
+    this.setState({ isDateTimePickerVisible: false });
+  };
 
   _handleDatePicked = (date) => {
-    alert('A date has been picked: ' + date);
+    this.setState({notificationDate: new Date(date)});
     this._hideDateTimePicker();
   };
+
 
   testFunc(){
     PushNotification.localNotification({
@@ -149,10 +169,15 @@ export default class App extends Component<Props> {
                       multiline={true}
                       onChangeText={ (description) => this.setState({ description }) }
                     />
+                    <Text>Send notification</Text>
+                    <Switch
+                      onValueChange={(sendNotification) => {this.setState({sendNotification});
+                        sendNotification ? this._showDateTimePicker(): 0 }}
+                      value={this.state.sendNotification}/>
+                    {this.state.notificationDate === undefined?
+                      <Text></Text>:
+                    <Text>{this.state.notificationDate.toLocaleString()}</Text>}
                   </View>
-                <TouchableOpacity onPress={this._showDateTimePicker}>
-                  <Text>Show DatePicker</Text>
-                </TouchableOpacity>
                 <DateTimePicker
                   isVisible={this.state.isDateTimePickerVisible}
                   onConfirm={this._handleDatePicked}
@@ -183,7 +208,7 @@ export default class App extends Component<Props> {
             title='Test'
             titleColor='#ffffff'
             color='rgb(0, 145, 234)'
-            onPress={()=> {this.testFunc()}}/>
+            onPress={()=> {App.createNotificationSchedule()}}/>
           <View style={styles.content}>
             {this.state.todos
               ?
