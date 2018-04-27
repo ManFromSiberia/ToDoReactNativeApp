@@ -5,13 +5,15 @@ import {
   Text,
   StatusBar,
   View, DrawerLayoutAndroid, ScrollView, AsyncStorage, TouchableHighlight, Animated, Modal, Dimensions,
-  TouchableNativeFeedback, ToastAndroid
+  TouchableNativeFeedback, ToastAndroid, TouchableOpacity
 } from 'react-native';
 import Toolbar from './components/Toolbar'
 import ToDoItem from "./components/ToDoItem";
 import { setCustomText } from 'react-native-global-props';
 import { TextField } from 'react-native-material-textfield';
 import { TextButton, RaisedTextButton } from 'react-native-material-buttons';
+import PushNotification from 'react-native-push-notification';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 const customTextProps = {
   style: {
@@ -25,7 +27,7 @@ export default class App extends Component<Props> {
   state = {
     todos: [],
     modalVisible: false,
-    phone: ''
+    isDateTimePickerVisible: false,
   };
 
   constructor (){
@@ -77,15 +79,35 @@ export default class App extends Component<Props> {
     });
   }
 
+  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+  _handleDatePicked = (date) => {
+    alert('A date has been picked: ' + date);
+    this._hideDateTimePicker();
+  };
+
   testFunc(){
-      alert(JSON.stringify(this.state.todos))
+    PushNotification.localNotification({
+      /* Android Only Properties */
+      vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
+
+      /* iOS and Android properties */
+      title: "Main notification", // (optional)
+      message: "My Notification Message", // (required)
+      actions: '["Yes", "No"]',  // (Android only) See the doc for notification actions to know more
+  });
+    PushNotification.localNotificationSchedule({
+      message: "Scheduler notification", // (required)
+      date: new Date(Date.now() + (60 * 1000)) // in 60 secs
+    });
+
   }
 
   updateItem = (value, action) => {
-    //alert(this.state.todos[0].id);
     this.state.todos.map(element =>{
       if (element.id === value){
-        //alert(element.title);
         let count = this.state.todos.indexOf(element);
         if (action === 'COMPLETE'){
           let buff = this.state.todos;
@@ -128,6 +150,15 @@ export default class App extends Component<Props> {
                       onChangeText={ (description) => this.setState({ description }) }
                     />
                   </View>
+                <TouchableOpacity onPress={this._showDateTimePicker}>
+                  <Text>Show DatePicker</Text>
+                </TouchableOpacity>
+                <DateTimePicker
+                  isVisible={this.state.isDateTimePickerVisible}
+                  onConfirm={this._handleDatePicked}
+                  onCancel={this._hideDateTimePicker}
+                  mode={'datetime'}
+                />
                 <View style={styles.modalButtons}>
                   <RaisedTextButton
                     title='Cancel'
@@ -148,6 +179,11 @@ export default class App extends Component<Props> {
 
           <Toolbar shadow
                    rightOptions={[{icon: 'add', handler:()=> {this.setState({modalVisible: true})}}]}/>
+          <RaisedTextButton
+            title='Test'
+            titleColor='#ffffff'
+            color='rgb(0, 145, 234)'
+            onPress={()=> {this.testFunc()}}/>
           <View style={styles.content}>
             {this.state.todos
               ?

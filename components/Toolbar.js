@@ -15,8 +15,8 @@ export default class Toolbar extends React.Component {
     Animated.timing(this.animatedValueRightElement, {
       toValue: curSpin,
       duration: 400
-    }).start();
-    handler ()
+    }).start(handler ());
+
   }
 
 
