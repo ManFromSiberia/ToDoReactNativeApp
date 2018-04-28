@@ -15,7 +15,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 
 const customTextProps = {
   style: {
-    fontFamily: 'Open Sans'
+    fontFamily: 'Roboto-Regular'
   }
 };
 setCustomText(customTextProps);
@@ -152,14 +152,15 @@ export default class App extends Component<Props> {
                       multiline={true}
                       onChangeText={ (description) => this.setState({ description }) }
                     />
-                    <Text>Send notification</Text>
-                    <Switch
-                      onValueChange={(sendNotification) => {this.setState({sendNotification});
-                        sendNotification ? this._showDateTimePicker(): 0 }}
-                      value={this.state.sendNotification}/>
-                    {this.state.notificationDate === undefined?
-                      <Text></Text>:
-                    <Text>{this.state.notificationDate.toLocaleString()}</Text>}
+                    <View style={styles.notificationInput}>
+                      <Text style={{top:2}}>Send notification</Text>
+                      <Switch
+                        onValueChange={(sendNotification) => {this.setState({sendNotification});
+                          sendNotification ? this._showDateTimePicker(): 0 }}
+                        value={this.state.sendNotification}/>
+                    </View>
+                      {this.state.notificationDate &&
+                      <Text>{this.state.notificationDate.toLocaleString()}</Text>}
                   </View>
                 <DateTimePicker
                   isVisible={this.state.isDateTimePickerVisible}
@@ -244,10 +245,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalButtons:{
-    flex: 1,
+    marginVertical: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  notificationInput:{
+    flexDirection: 'row',
+    alignContent: 'center',
+    marginVertical: 5,
+    justifyContent: 'space-between'
   },
 
 });
