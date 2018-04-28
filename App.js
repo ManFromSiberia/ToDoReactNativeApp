@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 import {
-  Platform,
   StyleSheet,
   Text,
   StatusBar,
-  View, DrawerLayoutAndroid, ScrollView, AsyncStorage, TouchableHighlight, Animated, Modal, Dimensions,
-  TouchableNativeFeedback, ToastAndroid, TouchableOpacity, Picker, SectionList, Switch
+  View, ScrollView, AsyncStorage, Modal, Dimensions, ToastAndroid, Switch
 } from 'react-native';
 import Toolbar from './components/Toolbar'
 import ToDoItem from "./components/ToDoItem";
 import { setCustomText } from 'react-native-global-props';
 import { TextField } from 'react-native-material-textfield';
-import { TextButton, RaisedTextButton } from 'react-native-material-buttons';
+import { RaisedTextButton } from 'react-native-material-buttons';
 import PushNotification from 'react-native-push-notification';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
@@ -36,11 +34,10 @@ export default class App extends Component<Props> {
     super();
     this.addNewPoint = this.addNewPoint.bind(this);
   }
-  //clear = AsyncStorage.clear();
+
   componentDidMount = async () => await AsyncStorage.getItem('todos').then((value)=>{
     this.setState({ todos: JSON.parse([value]) })
   });
-
 
   setName = async (title) => {
     try {
@@ -87,7 +84,6 @@ export default class App extends Component<Props> {
 
   static createNotificationSchedule(title, date){
     PushNotification.localNotificationSchedule({
-      //id: 1,
       title: "You complete this task?",
       message: title,
       date: new Date(date)
@@ -106,24 +102,6 @@ export default class App extends Component<Props> {
     this.setState({notificationDate: new Date(date)});
     this._hideDateTimePicker();
   };
-
-
-  testFunc(){
-    PushNotification.localNotification({
-      /* Android Only Properties */
-      vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-
-      /* iOS and Android properties */
-      title: "Main notification", // (optional)
-      message: "My Notification Message", // (required)
-      actions: '["Yes", "No"]',  // (Android only) See the doc for notification actions to know more
-  });
-    PushNotification.localNotificationSchedule({
-      message: "Scheduler notification", // (required)
-      date: new Date(Date.now() + (60 * 1000)) // in 60 secs
-    });
-
-  }
 
   updateItem = (value, action) => {
     this.state.todos.map(element =>{
@@ -147,6 +125,7 @@ export default class App extends Component<Props> {
       }
     })
   };
+
   render() {
     let { title } = this.state;
     let { description } = this.state;

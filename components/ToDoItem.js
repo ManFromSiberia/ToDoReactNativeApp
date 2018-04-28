@@ -1,14 +1,11 @@
 import React from "react";
 import {
-  View, Text, TouchableOpacity, StyleSheet, Dimensions, TouchableHighlight,
-  TouchableNativeFeedback, Animated, Easing
+  View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated, Easing
 } from 'react-native'
 import Swipeable from 'react-native-swipeable'
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const {height, width} = Dimensions.get('window');
-let showDescription = false;
-const leftContent = <Text>Pull to activate</Text>;
 
 export default class ToDoItem extends React.PureComponent {
   state = {
@@ -20,7 +17,6 @@ export default class ToDoItem extends React.PureComponent {
 
   heightAnimation(){
     let curHeight;
-    //alert(this.animatedValue._value);
     if (this.animatedValue._value === height*0.15){
       curHeight = height*0.1;
       this.setState({showDescription: false})
@@ -34,9 +30,11 @@ export default class ToDoItem extends React.PureComponent {
       easing: Easing.ease
     }).start()
   }
+
   _onPress(){
     this.heightAnimation();
   }
+
   swipeable = null;
 
   resetToInitialView() {
@@ -100,7 +98,3 @@ const styles = StyleSheet.create({
   },
   }
 );
-
-const rightButtons = [
-  <TouchableOpacity style={styles.button} onPress={() => alert({title})}><Icon name={'delete'} size={40} color="red"/></TouchableOpacity>
-];
