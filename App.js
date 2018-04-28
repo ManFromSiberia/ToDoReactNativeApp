@@ -208,11 +208,6 @@ export default class App extends Component<Props> {
 
           <Toolbar shadow
                    rightOptions={[{icon: 'add', handler:()=> {this.setState({modalVisible: true})}}]}/>
-          <RaisedTextButton
-            title='Test'
-            titleColor='#ffffff'
-            color='rgb(0, 145, 234)'
-            onPress={()=> {App.createNotificationSchedule()}}/>
           <View style={styles.content}>
             {this.state.todos
               ?
