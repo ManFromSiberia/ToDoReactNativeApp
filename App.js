@@ -132,10 +132,14 @@ export default class App extends Component<Props> {
         if (action === 'COMPLETE'){
           let buff = this.state.todos;
           buff[count].complete = !buff[count].complete;
+          if(buff[count].complete){
+            PushNotification.cancelLocalNotifications({message: buff[count].title});
+          }
           this.setState({todos: buff});
           AsyncStorage.setItem('todos', JSON.stringify(this.state.todos));
         }else if(action === 'DELETE'){
           let buff = this.state.todos;
+          PushNotification.cancelLocalNotifications({message: buff[count].title});
           buff.splice(count,1);
           this.setState({todos: buff});
           AsyncStorage.setItem('todos', JSON.stringify(this.state.todos));
